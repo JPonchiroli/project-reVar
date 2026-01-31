@@ -17,4 +17,6 @@ public interface IndividualMapper {
 
     Individual toIndividual(IndividualRequestDto requestDto);
 
+    Individual toIndividual(IndividualResponseDto responseDto);
+
 }

@@ -37,4 +37,10 @@ public class IndividualService {
 
     }
 
+    public void delete(Long id) {
+
+        individualRepository.delete(IndividualMapper.INSTANCE.toIndividual(getById(id)));
+
+    }
+
 }

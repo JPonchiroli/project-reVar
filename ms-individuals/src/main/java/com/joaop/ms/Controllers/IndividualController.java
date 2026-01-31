@@ -33,4 +33,13 @@ public class IndividualController {
 
     }
 
+    @DeleteMapping("{individualId}")
+    public ResponseEntity<IndividualResponseDto> deleteIndividual(@PathVariable Long individualId) {
+
+        service.delete(individualId);
+
+        return ResponseEntity.noContent().build();
+
+    }
+
 }
