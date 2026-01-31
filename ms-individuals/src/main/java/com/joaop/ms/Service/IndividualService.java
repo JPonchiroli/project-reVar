@@ -5,8 +5,12 @@ import com.joaop.ms.Dtos.IndividualResponseDto;
 import com.joaop.ms.Entities.Individual;
 import com.joaop.ms.Mappers.IndividualMapper;
 import com.joaop.ms.Repositories.IndividualRepository;
+import com.joaop.ms.Service.Exceptions.IndividualNotFoundException;
+import org.hibernate.ObjectNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class IndividualService {
@@ -21,6 +25,15 @@ public class IndividualService {
         individualRepository.save(individual);
 
          return IndividualMapper.INSTANCE.toIndividualResponseDto(individual);
+
+    }
+
+    public IndividualResponseDto getById(Long id) {
+
+        Individual individual = individualRepository.findById(id)
+                .orElseThrow(() -> new IndividualNotFoundException("Individual not found, Id: " + id));
+
+        return IndividualMapper.INSTANCE.toIndividualResponseDto(individual);
 
     }
 

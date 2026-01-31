@@ -24,4 +24,13 @@ public class IndividualController {
 
     }
 
+    @GetMapping("{individualId}")
+    public ResponseEntity<IndividualResponseDto> getIndividual(@PathVariable Long individualId) {
+
+        IndividualResponseDto individualResponseDto = service.getById(individualId);
+
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(individualResponseDto);
+
+    }
+
 }
