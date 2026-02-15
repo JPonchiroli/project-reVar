@@ -34,4 +34,14 @@ public class OperationController {
 
     }
 
+    @DeleteMapping("{individualId}")
+    public ResponseEntity<OperationResponseDto> deleteIndividual(@PathVariable Long individualId) {
+
+        service.delete(individualId);
+
+        return ResponseEntity.noContent().build();
+
+    }
+
+
 }

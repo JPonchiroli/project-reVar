@@ -54,4 +54,10 @@ public class OperationService {
 
     }
 
+    public void delete(Long id) {
+
+        operationRepository.delete(OperationMapper.INSTANCE.toOperation(getById(id)));
+
+    }
+
 }
