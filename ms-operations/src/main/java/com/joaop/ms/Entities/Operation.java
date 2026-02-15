@@ -16,7 +16,7 @@ public class Operation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long operationId;
     private Long individualId;
     private String shortName;
     private String longName;

@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @ToString
 public class OperationResponseDto {
 
+    private Long operationId;
     private Long individualId;
     private String shortName;
     private String longName;

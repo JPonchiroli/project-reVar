@@ -6,6 +6,7 @@ import com.joaop.ms.Dtos.OperationResponseDto;
 import com.joaop.ms.Entities.Operation;
 import com.joaop.ms.Mappers.OperationMapper;
 import com.joaop.ms.Repository.OperationRepository;
+import com.joaop.ms.Services.Exception.OperationNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,16 @@ public class OperationService {
             operationRepository.save(operation);
 
         }
+
+        return OperationMapper.INSTANCE.toOperationResponseDto(operation);
+
+    }
+
+
+    public OperationResponseDto getById(Long id) {
+
+        Operation operation = operationRepository.findById(id)
+                .orElseThrow(() -> new OperationNotFoundException("Operation not found, Id: " + id));
 
         return OperationMapper.INSTANCE.toOperationResponseDto(operation);
 

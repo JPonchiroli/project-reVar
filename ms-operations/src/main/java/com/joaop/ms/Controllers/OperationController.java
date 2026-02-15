@@ -7,10 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("ms/operations/operation")
@@ -26,6 +23,15 @@ public class OperationController {
         OperationResponseDto operation = service.insert(operationRequestDto);
 
         return ResponseEntity.status(HttpStatusCode.valueOf(201)).body(operation);
+    }
+
+    @GetMapping("/{operationId}")
+    public ResponseEntity<OperationResponseDto> getOperation(@PathVariable Long operationId) {
+
+        OperationResponseDto operation = service.getById(operationId);
+
+        return ResponseEntity.status(HttpStatusCode.valueOf(200)).body(operation);
+
     }
 
 }
