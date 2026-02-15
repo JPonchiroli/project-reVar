@@ -1,9 +1,11 @@
 package com.joaop.ms.Services;
 
 import com.joaop.ms.Dtos.BrapiResponse;
+import com.joaop.ms.Services.Exception.AssetNotFoundException;
 import com.joaop.ms.WebClient.BrapiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 @RequiredArgsConstructor
@@ -14,7 +16,14 @@ public class AssetService {
     public BrapiResponse.Asset getAsset(String symbol) {
 
         return brapiClient.getQuote(symbol)
-                .map(response -> response.getResults().get(0))
+                .flatMap(response ->
+                        Mono.justOrEmpty(
+                                response.getResults().stream().findFirst()
+                        )
+                )
+                .switchIfEmpty(Mono.error(
+                        new AssetNotFoundException("Symbol not found: " +symbol)
+                ))
                 .block();
 
     }
