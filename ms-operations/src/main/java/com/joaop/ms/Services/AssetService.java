@@ -1,31 +1,28 @@
 package com.joaop.ms.Services;
 
 import com.joaop.ms.Dtos.BrapiResponse;
+import com.joaop.ms.Feign.FeignBrapi;
 import com.joaop.ms.Services.Exception.AssetNotFoundException;
-import com.joaop.ms.WebClient.BrapiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import reactor.core.publisher.Mono;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class AssetService {
 
-    private final BrapiClient brapiClient;
+    private final FeignBrapi feignBrapi;
 
     public BrapiResponse.Asset getAsset(String symbol) {
 
-        return brapiClient.getQuote(symbol)
-                .flatMap(response ->
-                        Mono.justOrEmpty(
-                                response.getResults().stream().findFirst()
-                        )
-                )
-                .switchIfEmpty(Mono.error(
-                        new AssetNotFoundException("Symbol not found: " +symbol)
-                ))
-                .block();
+        BrapiResponse response = feignBrapi.getQuote(symbol);
 
+        return Optional.ofNullable(response)
+                .map(BrapiResponse::getResults)
+                .filter(list -> !list.isEmpty())
+                .map(list -> list.get(0))
+                .orElseThrow(() -> new AssetNotFoundException("Asset not found"));
     }
 
 
