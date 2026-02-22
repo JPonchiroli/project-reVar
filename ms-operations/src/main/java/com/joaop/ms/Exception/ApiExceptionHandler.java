@@ -1,6 +1,7 @@
 package com.joaop.ms.Exception;
 
 import com.joaop.ms.Services.Exception.AssetNotFoundException;
+import com.joaop.ms.Services.Exception.IndividualNotFoundException;
 import com.joaop.ms.Services.Exception.OperationNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -33,6 +34,14 @@ public class ApiExceptionHandler {
                 ex.getMessage()
         );
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    @ExceptionHandler(IndividualNotFoundException.class)
+    public ResponseEntity<Object> handleIndividualNotFound(IndividualNotFoundException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ex.getMessage());
     }
 
 }

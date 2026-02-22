@@ -1,12 +1,15 @@
 package com.joaop.ms.Services;
 
 import com.joaop.ms.Dtos.BrapiResponse;
+import com.joaop.ms.Dtos.IndividualDto;
 import com.joaop.ms.Dtos.OperationRequestDto;
 import com.joaop.ms.Dtos.OperationResponseDto;
 import com.joaop.ms.Entities.Operation;
+import com.joaop.ms.Feign.FeignIndividual;
 import com.joaop.ms.Mappers.OperationMapper;
 import com.joaop.ms.Repository.OperationRepository;
 import com.joaop.ms.Services.Exception.OperationNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,19 +17,21 @@ import java.time.LocalDate;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 public class OperationService {
 
-    @Autowired
-    private OperationRepository operationRepository;
-
-    @Autowired
-    private AssetService assetService;
+    private final OperationRepository operationRepository;
+    private final AssetService assetService;
+    private final FeignIndividual feignIndividual;
+    private final OperationMapper operationMapper;
 
     public OperationResponseDto insert(OperationRequestDto requestDto) {
 
-        Operation operation = OperationMapper.INSTANCE.toOperation(requestDto);
+        Operation operation = operationMapper.toOperation(requestDto);
 
         Optional<BrapiResponse.Asset> asset = Optional.ofNullable(assetService.getAsset(operation.getAssetSymbol()));
+
+        IndividualDto individual = feignIndividual.getIndividual(requestDto.getIndividualId());
 
         if (asset.isPresent()) {
 
@@ -40,7 +45,7 @@ public class OperationService {
 
         }
 
-        return OperationMapper.INSTANCE.toOperationResponseDto(operation);
+        return operationMapper.toOperationResponseDto(operation);
 
     }
 
@@ -50,13 +55,13 @@ public class OperationService {
         Operation operation = operationRepository.findById(id)
                 .orElseThrow(() -> new OperationNotFoundException("Operation not found, Id: " + id));
 
-        return OperationMapper.INSTANCE.toOperationResponseDto(operation);
+        return operationMapper.toOperationResponseDto(operation);
 
     }
 
     public void delete(Long id) {
 
-        operationRepository.delete(OperationMapper.INSTANCE.toOperation(getById(id)));
+        operationRepository.delete(operationMapper.toOperation(getById(id)));
 
     }
 
