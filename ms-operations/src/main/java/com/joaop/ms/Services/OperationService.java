@@ -8,6 +8,7 @@ import com.joaop.ms.Entities.Operation;
 import com.joaop.ms.Feign.FeignIndividual;
 import com.joaop.ms.Mappers.OperationMapper;
 import com.joaop.ms.Repository.OperationRepository;
+import com.joaop.ms.Services.Exception.AssetNotFoundException;
 import com.joaop.ms.Services.Exception.OperationNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,23 +28,25 @@ public class OperationService {
 
     public OperationResponseDto insert(OperationRequestDto requestDto) {
 
+        feignIndividual.getIndividual(requestDto.getIndividualId());
+
+        BrapiResponse.Asset asset =
+                Optional.ofNullable(assetService.getAsset(requestDto.getAssetSymbol()))
+                        .orElseThrow(() ->
+                                new AssetNotFoundException(
+                                        "Asset not found: " + requestDto.getAssetSymbol()
+                                )
+                        );
+
         Operation operation = operationMapper.toOperation(requestDto);
 
-        Optional<BrapiResponse.Asset> asset = Optional.ofNullable(assetService.getAsset(operation.getAssetSymbol()));
+        operation.setShortName(asset.getShortName());
+        operation.setLongName(asset.getLongName());
+        operation.setAssetPrice(asset.getRegularMarketPrice());
+        operation.setOperationPrice(operation.getAssetPrice() * operation.getAssetQuantity());
+        operation.setOperationDate(LocalDate.now());
 
-        IndividualDto individual = feignIndividual.getIndividual(requestDto.getIndividualId());
-
-        if (asset.isPresent()) {
-
-            operation.setShortName(asset.get().getShortName());
-            operation.setLongName(asset.get().getLongName());
-            operation.setAssetPrice(asset.get().getRegularMarketPrice());
-            operation.setOperationPrice(operation.getAssetPrice() * operation.getAssetQuantity());
-            operation.setOperationDate(LocalDate.now());
-
-            operationRepository.save(operation);
-
-        }
+        operationRepository.save(operation);
 
         return operationMapper.toOperationResponseDto(operation);
 
